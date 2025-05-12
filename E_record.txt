@@ -1,0 +1,364 @@
+(fastai) PS D:\A_KTH_Course\DL_DataScience\PROJECT-1> & D:/Anaconda/envs/fastai/python.exe d:/A_KTH_Course/DL_DataScience/PROJECT-1/main.py
+[Path('C:/Users/kjk54/.fastai/data/oxford-iiit-pet/annotations'), Path('C:/Users/kjk54/.fastai/data/oxford-iiit-pet/images')]
+7390
+CAT VS DOG:
+    默认Resnet34, Adam：
+        默认参数：
+        epoch     train_loss  valid_loss  error_rate  time    
+        0         0.127062    0.018483    0.005413    04:54
+        只解冻最后一层：
+        epoch     train_loss  valid_loss  error_rate  time
+        0         0.115966    0.012441    0.002706    04:35
+    可以看到unfreeze最后一层有效果，再拿NAG试试：
+    从learn.lr_find()学到了最佳学习率=0.0005,然后多次训练测出momentum=0.2不错
+
+在测试NAG+Resnet34：
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.131547    0.024092    0.006089    08:15
+    解冻最后一层:  
+    unfreezing:
+    optim <class 'fastai.optimizer.Optimizer'>
+    lr: 0.0005
+    momentum: 0.2
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.119055    0.012734    0.004736    04:44
+
+在测试NAG+Resnet18： 
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.130360    0.021212    0.010149    04:11
+    解冻最后一层:  
+    unfreezing:
+    optim <class 'fastai.optimizer.Optimizer'>
+    lr: 0.0005
+    momentum: 0.2
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.052346    0.022405    0.009472    02:48
+    果然深层网络可以嗷
+
+    
+37 种类：
+NAG+Resnet34：
+    lr: 0.0005
+    momentum: 0.3
+    optim <class 'fastai.optimizer.Optimizer'>
+    epoch     train_loss  valid_loss  error_rate  time
+    0         1.209242    0.354625    0.111637    04:37                                                                          
+    解冻最后一层: 
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.490103    0.259550    0.088633    04:58
+    
+
+    由于性能限制，电脑面热的都能煎鸡蛋了，分层 unfreeze还是用Resnet18得了
+NAG+Resnet18：
+    🔍 Testing freeze_to(-5)
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         1.316114    0.490954    0.151556    04:30
+    Unfreeze Till Layer -5 acc: 0.1516
+
+    🔍 Testing freeze_to(-4)
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         1.324796    0.544227    0.179296    04:10
+    Unfreeze Till Layer -4 acc: 0.1793
+
+    🔍 Testing freeze_to(-3)
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         1.356123    0.531749    0.168471    04:35
+    Unfreeze Till Layer -3 acc: 0.1685
+
+    🔍 Testing freeze_to(-2)
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         1.131665    0.435682    0.140054    03:55
+    Unfreeze Till Layer -2 acc: 0.1401
+
+    🔍 Testing freeze_to(-1)
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         1.315363    0.439689    0.131935    03:29
+    Unfreeze Till Layer -1 acc: 0.1319
+    Results: {
+        'unfreeze to -5layer': 0.15155616402626038, 
+        'unfreeze to -4layer': 0.1792963445186615, 
+        'unfreeze to -3layer': 0.16847090423107147, 
+        'unfreeze to -2layer': 0.1400541216135025, 
+        'unfreeze to -1layer': 0.13193504512310028}
+
+    为什么还是越训练越糟糕呢？应该是学习率没有按层分配。现在lr=find_lr。按层分配。
+    🔍 Testing freeze_to(-5)
+    📉 Suggested lr_min: 9.12e-04, lr_steep: 6.92e-04
+    epoch     train_loss  valid_loss  error_rate  time
+    0         1.136123    0.368086    0.117727    05:41
+    Unfreeze Till Layer -5 acc: 0.1177
+    🔍 Testing freeze_to(-4)
+    📉 Suggested lr_min: 9.12e-04, lr_steep: 6.92e-04
+    epoch     train_loss  valid_loss  error_rate  time
+    0         1.105977    0.371331    0.117727    05:58
+    Unfreeze Till Layer -4 acc: 0.1177
+    🔍 Testing freeze_to(-3)
+    📉 Suggested lr_min: 9.12e-04, lr_steep: 1.45e-03
+    epoch     train_loss  valid_loss  error_rate  time
+    0         1.117554    0.363538    0.108931    05:28
+    Unfreeze Till Layer -3 acc: 0.1089
+    🔍 Testing freeze_to(-2)
+    📉 Suggested lr_min: 1.58e-03, lr_steep: 8.32e-04
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.980010    0.383645    0.129905    06:02
+    Unfreeze Till Layer -2 acc: 0.1299
+    🔍 Testing freeze_to(-1)
+    📉 Suggested lr_min: 1.00e-02, lr_steep: 4.37e-03
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.855213    0.386798    0.117727    06:20
+    Unfreeze Till Layer -1 acc: 0.1177
+    Results: {
+        'unfreeze to -5layer': 0.11772666126489639,
+        'unfreeze to -4layer': 0.11772666126489639, 
+        'unfreeze to -3layer': 0.10893099009990692, 
+        'unfreeze to -2layer': 0.12990528345108032, 
+        'unfreeze to -1layer': 0.11772666126489639}
+    结论：可见不论解冻多少层，只要不训练>1epoch，效果就一般
+
+
+
+    逐层unfreeze(从-1到-5)+完全不更新BN层：
+    📉 Suggested lr_min: 1.00e-02, lr_steep: 7.59e-03███████████████████████████--| 97.83% [90/92 00:45<00:01 10.9680]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.880053    0.337751    0.102842    01:04
+    📉 Suggested lr_min: 3.98e-07, lr_steep: 7.59e-07████████████████-------------| 81.52% [75/92 00:37<00:08 1.8212]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.503120    0.332357    0.103518    00:47
+    📉 Suggested lr_min: 2.51e-06, lr_steep: 7.59e-07█████████--------------------| 70.65% [65/92 00:29<00:12 1.3135]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.512848    0.327384    0.094723    00:49
+    📉 Suggested lr_min: 5.25e-06, lr_steep: 6.31e-07█████████████----------------| 76.09% [70/92 00:32<00:10 1.8759]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.509293    0.316944    0.092693    00:49
+    📉 Suggested lr_min: 6.31e-08, lr_steep: 7.59e-07████████████-----------------| 75.00% [69/92 00:30<00:10 1.6932]
+    freezing to layer: -5
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.463871    0.314283    0.097429    00:48
+
+
+    逐层unfreeze(从-1到-5)+只更新解冻部分的BN层：
+    📉 Suggested lr_min: 1.00e-02, lr_steep: 4.37e-03███████████████████████████--| 97.83% [90/92 00:37<00:00 10.5976]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.873879    0.339578    0.102165    00:43
+    📉 Suggested lr_min: 1.32e-07, lr_steep: 6.31e-07██████████████---------------| 78.26% [72/92 00:29<00:08 1.6208]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.483526    0.344340    0.102842    00:45
+    📉 Suggested lr_min: 1.20e-06, lr_steep: 2.75e-06█████████--------------------| 69.57% [64/92 00:28<00:12 1.0359]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.457771    0.332887    0.099459    00:56
+    📉 Suggested lr_min: 1.32e-07, lr_steep: 6.31e-07█████████████----------------| 76.09% [70/92 00:45<00:14 1.6964]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.485034    0.337021    0.102165    01:12
+    📉 Suggested lr_min: 3.31e-05, lr_steep: 1.32e-06█████████████----------------| 76.09% [70/92 00:45<00:14 1.7689]
+    freezing to layer: -5
+    epoch     train_loss  valid_loss  error_rate  time  
+    0         0.476431    0.309671    0.094046    01:08
+
+
+
+    加data augment:
+    📉 Suggested lr_min: 1.00e-02,lr_steep: 3.02e-03█████████████████████████████████████--| 97.83% [90/92 00:36<00:00 11.9531]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.833102    0.347031    0.108254    00:54
+    Unfreeze Till Layer -1 acc: 0.8917
+    📉 Suggested lr_min: 4.79e-07,lr_steep: 3.31e-06██████████████████████-----------------| 77.17% [71/92 00:46<00:13 1.4458]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.522020    0.347954    0.108931    01:09
+    Unfreeze Till Layer -2 acc: 0.8911
+    📉 Suggested lr_min: 1.91e-07,lr_steep: 1.10e-06█████████████████████------------------| 76.09% [70/92 00:34<00:10 1.8226]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.510259    0.349467    0.110961    00:50
+    Unfreeze Till Layer -3 acc: 0.8890
+    📉 Suggested lr_min: 3.98e-07,lr_steep: 2.51e-05███████████████------------------------| 68.48% [63/92 00:29<00:13 0.9518]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.475802    0.351148    0.115020    00:49
+    Unfreeze Till Layer -4 acc: 0.8850
+    Results: {
+        'unfreeze to -1layer': 0.8917456045746803, 
+        'unfreeze to -2layer': 0.8910690099000931, 
+        'unfreeze to -3layer': 0.8890392407774925, 
+        'unfreeze to -4layer': 0.8849797025322914}
+
+
+
+    加上L2正则化：
+    📉 Suggested lr_min: 1.00e-02,lr_steep: 5.25e-03█████████████████████████████████████--| 97.83% [90/92 00:36<00:00 10.6370]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.900535    0.351242    0.100135    00:47
+    Unfreeze Till Layer -1 acc: 0.8999
+    📉 Suggested lr_min: 1.20e-06,lr_steep: 9.12e-07██████████████████---------------------| 72.83% [67/92 00:43<00:16 1.0976]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.509591    0.346809    0.100812    01:06
+    Unfreeze Till Layer -2 acc: 0.8992
+    📉 Suggested lr_min: 1.32e-05,lr_steep: 1.45e-05█████████████████----------------------| 70.65% [65/92 00:41<00:17 1.2149]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.510150    0.344092    0.100135    01:09
+    Unfreeze Till Layer -3 acc: 0.8999
+    📉 Suggested lr_min: 1.58e-05,lr_steep: 2.75e-06█████████████████████------------------| 76.09% [70/92 00:45<00:14 1.7413]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.480188    0.338803    0.098106    01:07
+    Unfreeze Till Layer -4 acc: 0.9019
+    Results: {
+        'unfreeze to -1layer': 0.8998646810650826, 
+        'unfreeze to -2layer': 0.8991880938410759, 
+        'unfreeze to -3layer': 0.8998646810650826, 
+        'unfreeze to -4layer': 0.9018944501876831}
+
+    只用20%cat data:
+    📉 Suggested lr_min: 1.20e-02,lr_steep: 3.02e-03---------------------------------------| 32.35% [22/68 00:09<00:18 10.4431]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         1.028763    0.403986    0.114260    00:32
+    Unfreeze Till Layer -1 acc: 0.8857
+    📉 Suggested lr_min: 8.32e-07,lr_steep: 2.29e-06---------------------------------------| 7.35% [5/68 00:02<00:25 1.5987]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.528387    0.401843    0.119744    00:33
+    Unfreeze Till Layer -2 acc: 0.8803
+    📉 Suggested lr_min: 7.59e-08,lr_steep: 9.12e-05---------------------------------------| 2.94% [2/68 00:01<00:38 1.6894]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.497493    0.405568    0.124314    00:36
+    Unfreeze Till Layer -3 acc: 0.8757
+    📉 Suggested lr_min: 1.74e-06,lr_steep: 6.31e-07████████████████████████████████████---| 97.06% [66/68 00:29<00:00 1.3235]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time    
+    0         0.494280    0.401759    0.115174    00:35
+    Unfreeze Till Layer -4 acc: 0.8848
+    Results: {
+        'unfreeze to -1layer': 0.8857403993606567, 
+        'unfreeze to -2layer': 0.8802559450268745, 
+        'unfreeze to -3layer': 0.8756855577230453, 
+        'unfreeze to -4layer': 0.8848263248801231}
+
+    结论：
+
+    改用WEIGHTED CE:
+    📉 Suggested lr_min: 8.32e-03,lr_steep: 3.63e-03---------------------------------------| 32.35% [22/68 00:12<00:25 13.3880]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  accuracy  error_rate  time    
+    0         1.434108    0.491552    0.870201  0.129799    00:33
+    Unfreeze Till Layer -1 acc: 0.1298
+    📉 Suggested lr_min: 4.79e-05,lr_steep: 7.59e-07---------------------------------------| 17.65% [12/68 00:04<00:23 2.5158]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  accuracy  error_rate  time    
+    0         0.632563    0.396494    0.882998  0.117002    00:33
+    Unfreeze Till Layer -2 acc: 0.1170
+    📉 Suggested lr_min: 5.75e-05,lr_steep: 6.31e-07---------------------------------------| 4.41% [3/68 00:01<00:28 2.0556]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  accuracy  error_rate  time    
+    0         0.563738    0.344768    0.894881  0.105119    00:35
+    Unfreeze Till Layer -3 acc: 0.1051
+    📉 Suggested lr_min: 6.31e-06,lr_steep: 5.75e-06---------------------------------------| 1.47% [1/68 00:00<00:28]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  accuracy  error_rate  time    
+    0         0.517279    0.337869    0.900366  0.099634    00:35
+    Unfreeze Till Layer -4 acc: 0.0996
+    Results: {
+        'unfreeze to -1layer': 0.12979888916015625, 
+        'unfreeze to -2layer': 0.11700183153152466, 
+        'unfreeze to -3layer': 0.10511881113052368, 
+        'unfreeze to -4layer': 0.09963434934616089}
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    逐层unfreeze(从-1到-5)+或许更新了全部BN层：
+    📉 Suggested lr_min: 1.20e-02, lr_steep: 3.02e-03███████████████████████████--| 97.83% [90/92 00:28<00:00 11.1262]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.891416    0.370064    0.110961    00:34
+    📉 Suggested lr_min: 6.31e-08, lr_steep: 9.12e-07█████████--------------------| 70.65% [65/92 00:21<00:08 1.0109]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.470123    0.364776    0.110961    00:36
+    📉 Suggested lr_min: 4.79e-05, lr_steep: 1.10e-06████████████-----------------| 73.91% [68/92 00:24<00:08 1.5666]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.404394    0.312207    0.094723    00:38
+    📉 Suggested lr_min: 4.79e-07, lr_steep: 1.10e-06███████████------------------| 72.83% [67/92 00:23<00:08 1.3672]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.365812    0.309056    0.089986    00:37
+    📉 Suggested lr_min: 8.32e-07, lr_steep: 1.10e-06███████████------------------| 72.83% [67/92 00:23<00:08 1.3492]
+    freezing to layer: -5
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.382336    0.308998    0.091340    00:37
+
+    加上L2正则化：
+    📉 Suggested lr_min: 1.45e-02, lr_steep: 2.51e-03███████████████████████████--| 97.83% [90/92 00:36<00:00 11.2815]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.925193    0.340026    0.104195    00:43
+    📉 Suggested lr_min: 2.75e-05, lr_steep: 7.59e-07█████████████████------------| 82.61% [76/92 00:31<00:06 2.1137]
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.548674    0.305304    0.098106    00:45
+    📉 Suggested lr_min: 1.74e-06, lr_steep: 3.98e-06█████████--------------------| 70.65% [65/92 00:28<00:11 1.2542]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.511435    0.304920    0.095399    00:47
+    📉 Suggested lr_min: 3.98e-05, lr_steep: 6.92e-06█████████--------------------| 70.65% [65/92 00:28<00:11 1.3829]
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.462442    0.285754    0.089310    00:47
+    📉 Suggested lr_min: 1.74e-06, lr_steep: 1.10e-06████████████-----------------| 75.00% [69/92 00:30<00:10 1.7456]
+    freezing to layer: -5
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.461926    0.284759    0.090663    00:47
+
+    只用20%cat data:
+    📉 Suggested lr_min: 1.45e-02,lr_steep: 5.25e-03------------------------------| 32.35% [22/68 00:12<00:26 11.2645]
+    freezing to layer: -1
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.949301    0.367980    0.102377    00:53
+    📉 Suggested lr_min: 7.59e-08,lr_steep: 3.31e-06
+    freezing to layer: -2
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.550012    0.371901    0.106033    00:33
+    📉 Suggested lr_min: 6.92e-05,lr_steep: 7.59e-07█████████████████████████-----| 92.65% [63/68 00:27<00:02 0.9710]
+    freezing to layer: -3
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.482819    0.310118    0.081353    00:35
+    📉 Suggested lr_min: 4.79e-05,lr_steep: 9.12e-07
+    freezing to layer: -4
+    epoch     train_loss  valid_loss  error_rate  time
+    0         0.417223    0.298082    0.080439    00:35
+    Results: {
+        'unfreeze to -1layer': 0.10237660259008408, 
+        'unfreeze to -2layer': 0.10603290796279907, 
+        'unfreeze to -3layer': 0.0813528299331665, 
+        'unfreeze to -4layer': 0.0804387554526329}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
